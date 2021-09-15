@@ -418,31 +418,48 @@ card_binary_sensor:
 card_media_player:
   template:
     - icon_info_bg
+    - ulm_language_variables
   icon: |
     [[[
-        var app = entity.attributes.app_name;
         var icon = 'mdi:speaker';
-        if(app == 'Spotify'){
-          var icon = 'mdi:spotify';
-        } else if(app == 'Google Podcasts'){
-          var icon = 'mdi:google-podcast';
-        } else if(app == 'Plex'){
-          var icon = 'mdi:plex';
-        } else if(app == 'Soundcloud'){
-          var icon = 'mdi:soundcloud';
-        } else if(app == 'Youtube Music'){
-          var icon = 'mdi:youtube';
-        } else if (app == 'Oto music'){
-          var icon = 'mdi:music-circle';
+        if(entity.attributes.app_name){
+          var app = entity.attributes.app_name.toLowerCase();
+          if(app == 'spotify'){
+            var icon = 'mdi:spotify';
+          } else if(app == 'google podcasts'){
+            var icon = 'mdi:google-podcast';
+          } else if(app == 'plex'){
+            var icon = 'mdi:plex';
+          } else if(app == 'soundcloud'){
+            var icon = 'mdi:soundcloud';
+          } else if(app == 'youtube music'){
+            var icon = 'mdi:youtube';
+          } else if (app == 'oto music'){
+            var icon = 'mdi:music-circle';
+          }
         }
         return icon;
     ]]]
-  label: "[[[ return entity.state; ]]]"
+  label: |
+    [[[ 
+        if (entity.state == 'off'){
+          return variables.ulm_off;
+        } else {
+          return variables.ulm_on;
+        }
+    ]]]
   state:
     - operator: template
       value: "[[[ return entity.state != 'off' ]]]"
       name: "[[[ return states[entity.entity_id].attributes.media_title; ]]]"
-      label: "[[[ return states[entity.entity_id].attributes.media_album_name; ]]]"
+      label: |
+        [[[ 
+            var label = variables.ulm_on;
+            if(states[entity.entity_id].attributes.media_album_name){
+              var label = states[entity.entity_id].attributes.media_album_name;
+            }
+            return label;
+        ]]]
       styles:
         label: 
           - color: white
@@ -462,8 +479,8 @@ card_media_player:
       - background-color: 'rgba(var(--color-theme),0.05)'
     card:
       - background-blend-mode: multiply
-      - background: "[[[ return states[entity.entity_id].attributes.entity_picture_local != null ? 'center / cover url(' + states[entity.entity_id].attributes.entity_picture_local + ') rgba(0, 0, 0, 0.15)' : '' ]]]"
-
+      - background: "[[[ return states[entity.entity_id].attributes.entity_picture != null ? 'center / cover url(' + states[entity.entity_id].attributes.entity_picture + ') rgba(0, 0, 0, 0.15)' : '' ]]]"
+      
 card_media_player_mini_album:
   label: "[[[ return entity.state; ]]]"
   state:
